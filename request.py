@@ -150,7 +150,10 @@ for jugador in jugadores:
         #comprobamos que no se repiten partidas
         if gameId not in matchs_id:
             matchs_id.append(gameId)
-            time.sleep(1)
+            #esperamos para no sobrepasar las consultas posibles en x tiempo
+            if contador >= 5:
+                contador = 0
+                time.sleep(5)
             URL = cabecera+"match/v4/matches/"+str(gameId)+api_key
             response = requests.get(URL)
             contador += 1
@@ -159,13 +162,11 @@ for jugador in jugadores:
             participantes = respuesta['participantIdentities'] 
             lista = []
 
+            arriba = False
             #vemos si el jugador a analizar esta en un equipo o en otro
             for jugador2 in participantes:
                 if jugador2['player']['currentAccountId'] == encryptedAccountId and jugador2['participantId'] <= 5:
                     arriba = True
-                    break
-                elif jugador2['player']['currentAccountId'] == encryptedAccountId and jugador2['participantId'] > 5:
-                    arriba = False
                     break
             
             #sacamos cada jugador y actualizamos la matriz de datos
@@ -179,19 +180,17 @@ for jugador in jugadores:
                         dentro = jugador2['player']
                         lista.append(dentro['currentAccountId'])
                         
-                equipos = respuesta['teams']
+            equipos = respuesta['teams']
 
-                if equipos[1]['win'] == 'Win':
-                    for entrada in lista:
-                        total = ha_ganado(total,encryptedAccountId,entrada)
-                else:
-                    for entrada in lista:
-                        total = ha_perdido(total,encryptedAccountId,entrada)
+            if equipos[1]['win'] == 'Win':
+                for entrada in lista:
+                    total = ha_ganado(total,encryptedAccountId,entrada)
+            else:
+                for entrada in lista:
+                    total = ha_perdido(total,encryptedAccountId,entrada)
              
-            #esperamos para no sobrepasar las consultas posibles en x tiempo
-            if contador >= 76:
-                contador = 0
-                time.sleep(10)
+           
+ 
            
 
   
