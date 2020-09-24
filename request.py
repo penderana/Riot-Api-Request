@@ -159,7 +159,11 @@ for jugador in jugadores:
             contador += 1
             respuesta = response.json() 
             
-            participantes = respuesta['participantIdentities'] 
+            try:
+                participantes = respuesta['participantIdentities'] 
+            except:
+                participantes = []
+               
             lista = []
 
             arriba = False
